@@ -23,7 +23,7 @@ email: benjaminabasel@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   Portfolio and Resume of Benjamin Arrio Basel
 baseurl: "/BenBasel"
-url: "localhost:4000"
+url: "benjaminbasel.github.io"
 twitter_username: jekyllrb
 github_username:  BenjaminBasel
 
