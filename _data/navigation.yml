@@ -1,0 +1,28 @@
+header:
+  - titles:
+      en      : &EN Resume
+    url: /resume
+
+  - titles:
+      en      : &EN       Archive
+    url: /archive
+
+  - titles:
+      en      : &EN       About
+    url: /about
+
+nav:
+  - title:      Start
+    children:
+      - title:  Quick Start
+        url:    /nav/quick-start
+      - title:  Structure
+        url:    /nav/structure
+
+  - title:      Customization
+    children:
+      - title:  Configuration
+        url:    /nav/configuration
+      - title:  Navigation
+        url:    /nav/navigation
+  
