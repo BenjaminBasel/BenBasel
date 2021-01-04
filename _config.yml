@@ -12,7 +12,7 @@ theme: jekyll-text-theme # Gem-based Jekyll Themes
 text_skin: dark # "default" (default), "dark", "forest", "ocean", "chocolate", "orange"
 highlight_theme: default # "default" (default), "tomorrow", "tomorrow-night", "tomorrow-night-eighties", "tomorrow-night-blue", "tomorrow-night-bright"
 url     : "https://benjaminbasel.github.io" # the base hostname & protocol for your site e.g. https://www.someone.com
-baseurl : /benbasel # does not include hostname
+baseurl : # does not include hostname
 title   : Benjamin Basel
 description: > # this means to ignore newlines until "Language & timezone"
   Portfolio of Benjamin Arrio Basel
@@ -49,7 +49,7 @@ author:
 
 ## => GitHub Repository (if the site is hosted by GitHub)
 ##############################
-repository: benjaminbasel/benbasel
+repository: benjaminbasel/benjaminbasel.github.io
 repository_tree: page-gh
 
 
