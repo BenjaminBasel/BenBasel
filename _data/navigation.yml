@@ -28,7 +28,7 @@ portfolio:
         url:    /portfolios/art/tcg-card-alters
   - title:      Engineering
     children:
-      - title:  Floor Seat Group Project
+      - title:  Floor Seat Project
         url:    /portfolios/engineering/floor-seat-project
       - title:  Turtle Trophy
         url:    /portfolios/engineering/turtle-trophy

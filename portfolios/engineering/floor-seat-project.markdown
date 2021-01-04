@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Floor Seat Group Project
+title: Floor Seat Project
 permalink: /portfolios/engineering/floor-seat-project/
 sidebar:
     nav: portfolio
