@@ -4,5 +4,7 @@
 
 layout: home
 pagination:
- enabled: true
+ enabled: false
 ---
+
+Welcome

@@ -3,26 +3,34 @@ header:
       en      : &EN Resume
     url: /resume
 
-  - titles:
-      en      : &EN       Archive
-    url: /archive
+ # - titles:
+  #    en      : &EN       Archive
+  #  url: /archive
 
   - titles:
       en      : &EN       About
     url: /about
 
-nav:
-  - title:      Start
-    children:
-      - title:  Quick Start
-        url:    /nav/quick-start
-      - title:  Structure
-        url:    /nav/structure
+  - titles:
+      en      : &EN       Portfolios
+    url: /portfolios
 
-  - title:      Customization
+portfolio:
+  - title:      Programming
     children:
-      - title:  Configuration
-        url:    /nav/configuration
-      - title:  Navigation
-        url:    /nav/navigation
-  
+      - title:  Motor Simulation
+        url:    /portfolios/programming/motor-simulation
+  - title:      Art
+    children:
+      - title:  Graphite Portraits
+        url:    /portfolios/art/graphite-portraits
+      - title:  TCG Card Alters
+        url:    /portfolios/art/tcg-card-alters
+  - title:      Engineering
+    children:
+      - title:  Floor Seat Group Project
+        url:    /portfolios/engineering/floor-seat-project
+      - title:  Turtle Trophy
+        url:    /portfolios/engineering/turtle-trophy
+
+        
