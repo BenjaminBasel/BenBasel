@@ -4,8 +4,16 @@ title: TCG Card Alters
 permalink: /portfolios/art/tcg-card-alters/
 sidebar:
     nav: portfolio
+article_header:
+ type: overlay
+ align: center
+ theme: dark
+ background_image:
+  gradient: 'linear-gradient(135deg, rgba(60, 60,60 , .5), rgba(60,60,60, .5))'
+  src: /assets/images/portfolios/tcg-card-alters/cover.png
 ---
 
-Benjamin Basel - Programmer - Artist - Engineer
+### Description:
+Artist(s): Benjamin Basel
 
-Paintings done on top of Cards from Magic: the Gathering and Pokemon tcg's
+Acrylic paintings done on top of cards from the Magic: the Gathering and Pokemon trading card games.

@@ -20,6 +20,8 @@ portfolio:
     children:
       - title:  Motor Simulation
         url:    /portfolios/programming/motor-simulation
+      - title:  Portfolio Website
+        url:    /portfolios/programming/portfolio-website
   - title:      Art
     children:
       - title:  Graphite Portraits
@@ -32,5 +34,7 @@ portfolio:
         url:    /portfolios/engineering/floor-seat-project
       - title:  Turtle Trophy
         url:    /portfolios/engineering/turtle-trophy
+      - title:  Marina Trash Collector Project
+        url:    /portfolios/engineering/marina-trash-collector-project
 
         
