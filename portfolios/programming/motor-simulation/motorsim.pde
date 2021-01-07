@@ -1,9 +1,11 @@
-/* @pjs preload="disk2.png""; */
+/* @pjs preload="disk2.png"; */
+PImage img;
 void setup() {
   size(1200, 800);
-  stroke(#FFFFFF);
+  stroke(255, 255, 255);
   textAlign(CENTER, CENTER);
-
+  background(0);
+   img = loadImage("disk2.png");
   forces = new ArrayList<Float>();
   forcespos = new ArrayList<Float>();
   rotorass = new Rotorass(wiremode, velmode);
@@ -22,7 +24,7 @@ VectorField forcevectors;
 CompositeMagnet magnets;
 
 //sz = screen width, vnum = # of pointcharges , sh = 1/2 distance between pointcharges
-float sz = 800;
+int sz = 800;
 int vnum = 50;
 float sh = sz/vnum/2;
 
@@ -40,7 +42,7 @@ Buttonass magnetbuttons = new Buttonass(1000, 210, 35, 6, magmode, "Magnet Confi
 Buttonass velbuttons = new Buttonass(1000, 280, 35, 5, velmode, "Speed Config");
 
 void draw() {
-  clear();
+  background(0);
   //draw the vectors
   forcevectors.drawField();
   //draw the magnets
@@ -48,244 +50,27 @@ void draw() {
   //draws the rotor assembly
   rotorass.radraw();
 
+
   //draws the buttons
-  wirebuttons.drawButtonass();
-  magnetbuttons.drawButtonass();
-  velbuttons.drawButtonass();
+   wirebuttons.drawButtonass();
+   magnetbuttons.drawButtonass();
+   velbuttons.drawButtonass();
 }
 
 void mousePressed() {
-  if (wirebuttons.mouseCheck()) {
-    wiremode = wirebuttons.nselect;
-  } else if (magnetbuttons.mouseCheck()) {
-    magmode = magnetbuttons.nselect;
-    magnets.updateMode(magmode);
-    rotorass.resetRotor();
-  } else if (velbuttons.mouseCheck()) {  
-    velmode = velbuttons.nselect;
-    rotorass.updateVelocity(velmode);
-  }
-}
-class Button {
-  int x;
-  int y;
-  //half the width
-  int sz;
-  Button(int x, int y, int wdth) {
-    this.x = x;
-    this.y = y;
-    sz = wdth/2;
-  }
-
-  void drawButton() {
-    rect(x-sz, y-sz, sz*2, sz*2);
-  }
-
-  boolean mouseCheck() {
-    boolean output;
-    if (mouseX > x-sz && mouseX < x+sz && mouseY > y-sz && mouseY < y+sz) {
-      output = true;
-    } else output = false;
-    return(output);
-  }
-}
-class Buttonass {
-  int x;
-  int y;
-  int sz;
-  int widt;
-  int n;
-  int nselect;
-  String title;
-
-  Button[] buttons;
-  Buttonass(int x, int y, int size, int quantity, int selected, String title) {
-    this.x = x;
-    this.y = y;
-    this.sz = size;
-    this.widt = size*(3*quantity+1)/4;
-    n=quantity;
-    this.title = title;
-    this.nselect = selected;
-
-    buttons = new Button[n];
-    for (int i = 0; i<n; i++) {
-      buttons[i] = new Button(x-widt/2+(3*i+2)*sz/4, y, sz/2);
-    }
-  }
-
-  void drawButtonass() {
-    strokeWeight(2);
-    stroke(#000000);
-    fill(#FFFFFF);
-    rect(x-widt/2, y-sz/2, widt, sz);
-    textSize(25);
-    text(title, x , y - sz);
-    for (int i = 0; i<n; i++) {
-      buttons[i].drawButton();
-    }
-    fill(#7777FF);
-    buttons[nselect].drawButton();
-  }
-  
-  boolean mouseCheck() {
-    for(int i = 0; i < n; i++) {
-      if (buttons[i].mouseCheck()) {
-       nselect = i;
-       return(true);
-      }
-    }
-    return(false);
-  }
-}
-//class for individual rotor arm
-//force calculations are performed at 6 nodes
-class Coil {
-  //  float vel;
-  //x,y unit value position and angle
-  float x;
-  float y;
-  float startang;
-
-  //node dist is width of coil at top/bottom, nodedist2 is distance in center (to account for bulge in amateur winding)
-  //nodes[][] contains the radius, xpos, and ypos to each approximation node
-  float nodedir;
-  float nodedist;
-  float nodedist2;
-  float[][] nodes;
-
-  //temporary vars for starting loops and holding values
-  boolean first ;
-  boolean firstloop;
-  float force;
-  //force component holders
-  float forcex;
-  float forcey;
-
-  Coil (float startang) {
-    this.startang = startang;
-    nodedist=50;
-    nodedist2 = 75;
-    nodes = new float[6][3];
-    nodes[0][0] = 230;
-    nodes[1][0] = 230;
-    nodes[2][0] = 100;
-    nodes[3][0] = 100;
-    nodes[4][0] = 165;
-    nodes[5][0] = 165;
-
-    first = true;
-    firstloop = true;
-  }
+ if (wirebuttons.mouseCheck()) {
+ wiremode = wirebuttons.nselect;
+ } else if (magnetbuttons.mouseCheck()) {
+ magmode = magnetbuttons.nselect;
+ magnets.updateMode(magmode);
+ rotorass.resetRotor();
+ } else if (velbuttons.mouseCheck()) {  
+ velmode = velbuttons.nselect;
+ rotorass.updateVelocity(velmode);
+ }
+ }
 
 
-
-  void rdraw(float cdir, float maxforce) {
-
-    //cw current direction is blue, ccw is red, neither is white
-    //draws the structural lines of the rotor
-    strokeWeight(5);
-    if (cdir<0) {
-      fill(#0000FF);
-      stroke(#0000FF);
-    } else if (cdir>0) {
-      fill(#FF0000);
-      stroke(#FF0000);
-    } else {
-      fill(#FFFFFF);
-      stroke(#FFFFFF);
-    }
-    line(nodes[0][0]*x+sz/2, nodes[0][0]*y+sz/2, 50*x+sz/2, 50*y+sz/2);
-    line(nodes[0][1], nodes[0][2], nodes[1][1], nodes[1][2]);
-    line(nodes[2][1], nodes[2][2], nodes[3][1], nodes[3][2]);
-    line(nodes[4][1], nodes[4][2], nodes[5][1], nodes[5][2]);
-
-
-    //force direction
-    stroke(#000000);
-    line(150*x+sz/2, 150*y+sz/2, 150*x+sz/2+forcex, 150*y+sz/2+forcey);
-    strokeWeight(2);
-    fill(#000000);
-    ellipse(150*x+sz/2+forcex, 150*y+sz/2+forcey, 7, 7);
-
-    //draws the approximation nodes on the rotor, colors based on force  
-    for (int i = 0; i < 6; i++) {
-      colorcalc(cdir, i, maxforce);
-      ellipse(nodes[i][1], nodes[i][2], 20, 20);
-    }
-  }
-
-
-
-  //calculates the change in position and force based on angular displacement/direction
-  void calculate(float rotation, float cdir) {
-
-    //determines new angle and keeps value between 0 and 2 radians
-    rotation+=startang;
-    if (rotation>2*PI) {
-      rotation = rotation-floor(rotation/(2*PI))*2*PI;
-    }
-
-    //converts angular position to coordinate position unit value
-    x=cos(rotation);
-    y=sin(rotation);
-
-    //performs force calculations based on the position of the coil
-    forcex=0;
-    forcey=0;
-    for (int i = 0; i < 6; i ++) {
-      forcex+=forcecalc(cdir, i)[0];
-      forcey+=forcecalc(cdir, i)[1];
-    }
-
-    force = (-forcex*y+forcey*x)/sqrt(y*y+x*x);
-    forces.add(force);
-    forcespos.add(rotation);
-  }
-
-
-
-  //color gradient calculation
-  //(radius of node, cdir, node #, scale proportion for gradient
-  void colorcalc(float cdir, int n, float scale) {
-    forcex=forcecalc(cdir, n)[0];
-    forcey=forcecalc(cdir, n)[1];
-    force = (-forcex*y+forcey*x)/sqrt(y*y+x*x);
-    if (force >= 0) {
-      fill(lerpColor(#FFFFFF, #00FF00, force/(scale)));
-      //stroke(lerpColor(#FFFFFF, #00FF00, tempforce/20));
-    } else {
-      fill(lerpColor(#FFFFFF, #FF0000, -force/(scale)));
-      //stroke(lerpColor(#FFFFFF, #FF0000, -tempforce/20));
-    }
-  }
-
-
-  //force calculations at each node
-  float[] forcecalc(float d, int n) {
-    //x1,y1 temp holders
-    int x1;
-    int y1;
-    float l = nodes[n][0];
-    float[] forcereturn = new float[2];
-    if (n % 2 == 1) {
-      nodes[n][1] = l*x+sz/2-nodedist*y/(abs(x)+abs(y));
-      nodes[n][2] = l*y+sz/2+nodedist*x/(abs(x)+abs(y));
-      x1 = round((nodes[n][1]) * vnum/sz);
-      y1 = round((nodes[n][2]) * vnum/sz);
-      forcereturn[0]=-d*forcevectors.vectors[x1][y1].vy;
-      forcereturn[1]=d*forcevectors.vectors[x1][y1].vx;
-    } else {
-      nodes[n][1] = l*x+sz/2+nodedist*y/(abs(x)+abs(y));
-      nodes[n][2] = l*y+sz/2-nodedist*x/(abs(x)+abs(y));
-      x1 = round((nodes[n][1]) * vnum/sz);
-      y1 = round((nodes[n][2]) * vnum/sz);
-      forcereturn[0]=d*forcevectors.vectors[x1][y1].vy;
-      forcereturn[1]=-d*forcevectors.vectors[x1][y1].vx;
-    }
-    return forcereturn;
-  }
-}
 class CompositeMagnet {
   int mode;
   ArrayList<Magnet> mags;
@@ -372,30 +157,20 @@ class CompositeMagnet {
 
 
 
-  void maggen(float ang, boolean pol) {
-    PImage img;
-    img = loadImage("disk2.png");
-    pushMatrix();
-    translate(sz/2, sz/2);
-    rotate(ang);
-    image(img, -800, -800);
-    popMatrix();
-
-    for (int i = 0; i < sz; i+=5) {
-      for (int i2 = 0; i2 < sz; i2+=5) {
-
-        if (get(i, i2)!=-1) {  
-          if (pol) {
-            // if (i>sz/2) {
-            mags.add(new Magnet(i, i2, -ang, (float)-get(i, i2)/16777216));
-          } else {
-            mags.add(new Magnet(i, i2, PI-ang, (float)-get(i, i2)/16777216));
-          }
+ void maggen(float ang, boolean pol) {
+    for (int i = 0; i < 25; i+=5) {
+      for (int i2 = 0; i2 < 150; i2+=5) {
+        if (pol) {
+          mags.add(new Magnet(675+i, 325+i2, -ang, 1));
+        } else {
+          mags.add(new Magnet(125-i, 325+i2, PI-ang, 1));
         }
       }
     }
   }
 }
+
+
 class ForceVector {
   float posx;
   float posy;
@@ -405,10 +180,12 @@ class ForceVector {
   float vy;
   color c;
   float push;
+
   ForceVector(float x, float y) {
     posx = x;
     posy = y;
   }
+
   void addmag(Magnet m) {
     addvect(m.posc);
     addvect(m.negc);
@@ -445,9 +222,9 @@ class ForceVector {
     translate(posx+sh, posy+sh);
 
     if (log(sqrt(vx*vx+vy*vy)+1) < 3) {
-      c = lerpColor(#77FF77, #FFB777, (float)log(sqrt(vx*vx+vy*vy)+1)/3);
+      c = lerpColor(color(128, 255, 128), color(255, 192, 128), (float)log(sqrt(vx*vx+vy*vy)+1)/3);
     } else {
-      c = lerpColor(#FFB777, #FF7777, (float)(log(sqrt(vx*vx+vy*vy)+1)-3)/3);
+      c = lerpColor(color(255, 192, 128), color(255, 128, 128), (float)(log(sqrt(vx*vx+vy*vy)+1)-3)/3);
     }
 
     //  c = lerpColor(#03FF2A,#FF8103,push/10+0.6);
@@ -455,7 +232,7 @@ class ForceVector {
     rect(-5, -5, sz/vnum, sz/vnum);
 
     strokeWeight(2);
-    stroke(#000000);
+    stroke(0, 0, 0);
     float t = sz/vnum*2/3;
     float x=vx*t/(abs(vx)+abs(vy));
     float y=vy*t/(abs(vx)+abs(vy));
@@ -466,6 +243,46 @@ class ForceVector {
     popMatrix();
   }
 }
+
+
+class Magnet {
+  float posx;
+  float posy;
+  float dir;
+  float str;
+  PointCharge posc;
+  PointCharge negc;
+  Magnet(float x, float y, float ang, float s) {
+    posx = x;
+    posy = y;
+    dir = ang;
+    str = s*0.1;
+    posc = new PointCharge(x+sh*cos(-dir), y+sh*sin(-dir), str);
+    negc = new PointCharge(x-sh*cos(-dir), y-sh*sin(-dir), -str);
+  }
+  void drawmag() {
+    int w = 20;
+    pushMatrix();
+    translate(posx+sh, posy+sh);
+    rotate(-dir);
+    stroke(0,0,0);
+    strokeWeight(1);
+   // noStroke();
+    fill(255,0,0);
+    rect(0, -w/4, w/2, w/2);
+    fill(0,0,255);
+    rect(-w/2, -w/4, w/2, w/2);
+    fill(0,0,0);
+   noStroke();
+    ellipse(0, 0, 3, 3);
+    fill(0,255,0);
+    ellipse(w/2,0,3,3);
+    ellipse(-w/2,0,3,3);
+    
+    popMatrix();
+  }
+}
+
 class PointCharge {
 float charge;
 float posx;
@@ -475,6 +292,199 @@ PointCharge(float x, float y, float c) {
   posx = x;
   posy = y;
 }
+}
+
+class VectorField {
+  int nwidth;
+  int nheight;
+  int quantity;
+  ForceVector[][] vectors;
+
+  VectorField(int quantity) {
+    nwidth = 0;
+    nheight = 0;
+    this.quantity = quantity;
+    vectors = new ForceVector[quantity][quantity];
+  }
+
+
+
+  void drawField() {
+    for (int i = 0; i < vnum; i++) {
+      for (int i2 = 0; i2 < vnum; i2++) {
+        vectors[i][i2].drawvect();
+      }
+    }
+  }
+  /*
+  void generateVectors() {
+   for (int i = 0; i < quantity; i++) {
+   for (int i2 = 0; i2 < quantity; i2++) {
+   vectors[i][i2]  = new ForceVector(i*sz/quantity, i2*sz/quantity);
+   //vectors[i][i2].addmag(mags.get(i3));
+   }
+   }
+   }
+   */
+
+  void generateVectors(ArrayList<Magnet> mags) {
+    for (int i = 0; i < quantity; i++) {
+      for (int i2 = 0; i2 < quantity; i2++) {
+        vectors[i][i2]  = new ForceVector(i*sz/quantity, i2*sz/quantity);
+        for (int i3 = 0; i3 < mags.size(); i3++) {
+          vectors[i][i2].addmag(mags.get(i3));
+        }
+      }
+    }
+  }
+}
+//class for individual rotor arm
+//force calculations are performed at 6 nodes
+class Coil {
+  //  float vel;
+  //x,y unit value position and angle
+  float x;
+  float y;
+  float startang;
+
+  //node dist is width of coil at top/bottom, nodedist2 is distance in center (to account for bulge in amateur winding)
+  //nodes[][] contains the radius, xpos, and ypos to each approximation node
+  float nodedir;
+  float nodedist;
+  float nodedist2;
+  float[][] nodes;
+
+  //temporary vars for starting loops and holding values
+  boolean first ;
+  boolean firstloop;
+  float force;
+  //force component holders
+  float forcex;
+  float forcey;
+
+  Coil (float startang) {
+    this.startang = startang;
+    nodedist=50;
+    nodedist2 = 75;
+    nodes = new float[6][3];
+    nodes[0][0] = 230;
+    nodes[1][0] = 230;
+    nodes[2][0] = 100;
+    nodes[3][0] = 100;
+    nodes[4][0] = 165;
+    nodes[5][0] = 165;
+
+    first = true;
+    firstloop = true;
+  }
+
+
+
+  void rdraw(float cdir, float maxforce) {
+
+    //cw current direction is blue, ccw is red, neither is white
+    //draws the structural lines of the rotor
+    strokeWeight(5);
+    if (cdir<0) {
+      fill(0,0,255);
+      stroke(0,0,255);
+    } else if (cdir>0) {
+      fill(255,0,0);
+      stroke(255,0,0);
+    } else {
+      fill(255,255,255);
+      stroke(255,255,255);
+    }
+    line(nodes[0][0]*x+sz/2, nodes[0][0]*y+sz/2, 50*x+sz/2, 50*y+sz/2);
+    line(nodes[0][1], nodes[0][2], nodes[1][1], nodes[1][2]);
+    line(nodes[2][1], nodes[2][2], nodes[3][1], nodes[3][2]);
+    line(nodes[4][1], nodes[4][2], nodes[5][1], nodes[5][2]);
+
+
+    //force direction
+    stroke(0,0,0);
+    line(150*x+sz/2, 150*y+sz/2, 150*x+sz/2+forcex, 150*y+sz/2+forcey);
+    strokeWeight(2);
+    fill(0,0,0);
+    ellipse(150*x+sz/2+forcex, 150*y+sz/2+forcey, 7, 7);
+
+    //draws the approximation nodes on the rotor, colors based on force  
+    for (int i = 0; i < 6; i++) {
+      colorcalc(cdir, i, maxforce);
+      ellipse(nodes[i][1], nodes[i][2], 20, 20);
+    }
+  }
+
+
+
+  //calculates the change in position and force based on angular displacement/direction
+  void calculate(float rotation, float cdir) {
+
+    //determines new angle and keeps value between 0 and 2 radians
+    rotation+=startang;
+    if (rotation>2*PI) {
+      rotation = rotation-floor(rotation/(2*PI))*2*PI;
+    }
+
+    //converts angular position to coordinate position unit value
+    x=cos(rotation);
+    y=sin(rotation);
+
+    //performs force calculations based on the position of the coil
+    forcex=0;
+    forcey=0;
+    for (int i = 0; i < 6; i ++) {
+      forcex+=forcecalc(cdir, i)[0];
+      forcey+=forcecalc(cdir, i)[1];
+    }
+
+    force = (-forcex*y+forcey*x)/sqrt(y*y+x*x);
+    forces.add(force);
+    forcespos.add(rotation);
+  }
+
+
+
+  //color gradient calculation
+  //(radius of node, cdir, node #, scale proportion for gradient
+  void colorcalc(float cdir, int n, float scale) {
+    forcex=forcecalc(cdir, n)[0];
+    forcey=forcecalc(cdir, n)[1];
+    force = (-forcex*y+forcey*x)/sqrt(y*y+x*x);
+    if (force >= 0) {
+      fill(lerpColor(color(255,255,255), color(0,255,0), force/(scale)));
+      //stroke(lerpColor(#FFFFFF, #00FF00, tempforce/20));
+    } else {
+      fill(lerpColor(color(255,255,255), color(255,0,0), -force/(scale)));
+      //stroke(lerpColor(#FFFFFF, #FF0000, -tempforce/20));
+    }
+  }
+
+
+  //force calculations at each node
+  float[] forcecalc(float d, int n) {
+    //x1,y1 temp holders
+    int x1;
+    int y1;
+    float l = nodes[n][0];
+    float[] forcereturn = new float[2];
+    if (n % 2 == 1) {
+      nodes[n][1] = l*x+sz/2-nodedist*y/(abs(x)+abs(y));
+      nodes[n][2] = l*y+sz/2+nodedist*x/(abs(x)+abs(y));
+      x1 = round((nodes[n][1]) * vnum/sz);
+      y1 = round((nodes[n][2]) * vnum/sz);
+      forcereturn[0]=-d*forcevectors.vectors[x1][y1].vy;
+      forcereturn[1]=d*forcevectors.vectors[x1][y1].vx;
+    } else {
+      nodes[n][1] = l*x+sz/2+nodedist*y/(abs(x)+abs(y));
+      nodes[n][2] = l*y+sz/2-nodedist*x/(abs(x)+abs(y));
+      x1 = round((nodes[n][1]) * vnum/sz);
+      y1 = round((nodes[n][2]) * vnum/sz);
+      forcereturn[0]=d*forcevectors.vectors[x1][y1].vy;
+      forcereturn[1]=-d*forcevectors.vectors[x1][y1].vx;
+    }
+    return forcereturn;
+  }
 }
 //the constructed rotor assembly composed of the coils
 class Rotorass {
@@ -597,7 +607,7 @@ class Rotorass {
 
   void radraw() {
     rotorcalc();
-    fill(#FFFFFF);
+    fill(255,255,255);
     textSize(20);
     text("Force: " + round(force), 1000, 20);
     //text("Max Force: " + (float)round(maxforce), 1000, 60);
@@ -606,9 +616,9 @@ class Rotorass {
 
     //draws the contacts view
     noStroke();
-    fill(#FFFFFF);
+    fill(255,255,255);
     rect(820, 420, 360, 360);
-    fill(#000000);
+    fill(0,0,0);
     pushMatrix();
     translate(1000, 600);
 
@@ -620,21 +630,21 @@ class Rotorass {
     arc(0, 0, 150, 150, angle+4*PI/3+pspace, angle+2*PI-pspace);
 
     noStroke();
-    fill(#FFFFFF);
+    fill(255,255,255);
     ellipse(0, 0, 140, 140);
     if (mode == 3) {
-      fill(#0000FF);
+      fill(0,0,255);
       rect(-25, -85, 50, 10);
-      fill(#FF0000);
+      fill(255,0,0);
       rect(-25, 75, 50, 10);
     } else {
-      fill(#FF0000);
+      fill(255,0,0);
       rect(-85, -25, 10, 50);
-      fill(#0000FF);
+      fill(0,0,255);
       rect(75, -25, 10, 50);
     }
 
-    stroke(#000000);
+    stroke(0,0,0);
     strokeWeight(30);
     //temp holds current angle of the coils
     temp = angle + coilangle;
@@ -653,22 +663,22 @@ class Rotorass {
     coil3.rdraw(dispcalc(5*PI/3), maxforce);
     //converts forces into a gradient value/hue where green is positive and red is negative
     //uses that color to draw the center force measurement lines
-    fill(#777777);
+    fill(128,128,128);
     noStroke();
     ellipse(sz/2, sz/2, 100, 100);
     if (forces.size()>1) {
       for (int i = 1; i < forces.size(); i++) {
         if (forces.get(i) >= 0) {
-          stroke(lerpColor(#FFFFFF, #00FF00, forces.get(i)/maxforce));
+          stroke(lerpColor(color(255,255,255), color(0,255,0), forces.get(i)/maxforce));
         } else {
-          stroke(lerpColor(#FFFFFF, #FF0000, -forces.get(i)/maxforce));
+          stroke(lerpColor(color(255,255,255), color(255,0,0), -forces.get(i)/maxforce));
         }
         strokeWeight(1.6*vel+0.9);
         line(sz/2, sz/2, sz/2+cos(forcespos.get(i))*50, sz/2+sin(forcespos.get(i))*50);
       }
     }
     noFill();
-    stroke(#000000);
+    stroke(0,0,0);
     strokeWeight(5);
     ellipse(sz/2, sz/2, 100, 100);
   }
@@ -681,45 +691,45 @@ class Rotorass {
     switch (mode) {
     case 0:
       if (d > PI-2*PI/6 && d < PI+2*PI/6) {
-        fill(#FF0000);
-        stroke(#FF0000);
+        fill(255,0,0);
+        stroke(255,0,0);
       } else if (d < 2*PI/6 || d > 2*PI-2*PI/6) {
-        fill(#0000FF);
-        stroke(#0000FF);
+        fill(0,0,255);
+        stroke(0,0,255);
       } else if (d<PI) {
-        fill(#FF0000);
-        stroke(#FF0000);
+        fill(255,0,0);
+        stroke(255,0,0);
       } else if (d>PI) {
-        fill(#0000FF);
-        stroke(#0000FF);
+        fill(0,0,255);
+        stroke(0,0,255);
       }
       break;
       case (3):
       if (d>PI/2-PI/3+pspace && d < PI/2-pspace || d>PI/2+pspace && d<PI/2+PI/3-pspace ) {
-        fill(#FF0000);
-        stroke(#FF0000);
+        fill(255,0,0);
+        stroke(255,0,0);
       } else if (d>3*PI/2-PI/3+pspace && d < 3*PI/2-pspace || d>3*PI/2+pspace && d<3*PI/2+PI/3-pspace ) {
-        fill(#0000FF);
-        stroke(#0000FF);
+        fill(0,0,255);
+        stroke(0,0,255);
       } else {
-        fill(#000000);
-        stroke(#000000);
+        fill(0,0,0);
+        stroke(0,0,0);
       }
       break;
       case (-1):
-      fill(#FF0000);
-      stroke(#FF0000);
+      fill(255,0,0);
+      stroke(255,0,0);
       break;
     default:
       if (d>PI-PI/3+pspace && d < PI-pspace || d>PI+pspace && d<PI+PI/3-pspace ) {
-        fill(#FF0000);
-        stroke(#FF0000);
+        fill(255,0,0);
+        stroke(255,0,0);
       } else if (d< PI/3-pspace && d> pspace || d>2*PI-PI/3+pspace && d < 2*PI-pspace) {
-        fill(#0000FF);
-        stroke(#0000FF);
+        fill(0,0,255);
+        stroke(0,0,255);
       } else {
-        fill(#000000);
-        stroke(#000000);
+        fill(0,0,0);
+        stroke(0,0,0);
       }
       break;
     }
@@ -801,76 +811,77 @@ class Rotorass {
     this.vel=pow(2, velmode) * PI/16;
   }
 }
-class VectorField {
-  int nwidth;
-  int nheight;
-  int quantity;
-  ForceVector[][] vectors;
 
-  VectorField(int quantity) {
-    nwidth = 0;
-    nheight = 0;
-    this.quantity = quantity;
-    vectors = new ForceVector[quantity][quantity];
+class Button {
+  int x;
+  int y;
+  //half the width
+  int sz;
+  Button(int x, int y, int wdth) {
+    this.x = x;
+    this.y = y;
+    sz = wdth/2;
   }
 
-
-
-  void drawField() {
-    for (int i = 0; i < vnum; i++) {
-      for (int i2 = 0; i2 < vnum; i2++) {
-        vectors[i][i2].drawvect();
-      }
-    }
+  void drawButton() {
+    rect(x-sz, y-sz, sz*2, sz*2);
   }
 
-
-  void generateVectors(ArrayList<Magnet> mags) {
-    for (int i = 0; i < quantity; i++) {
-      for (int i2 = 0; i2 < quantity; i2++) {
-        vectors[i][i2]  = new ForceVector(i*sz/quantity, i2*sz/quantity);
-        for (int i3 = 0; i3 < mags.size(); i3++) {
-          vectors[i][i2].addmag(mags.get(i3));
-        }
-      }
-    }
-    println("update");
+  boolean mouseCheck() {
+    boolean output;
+    if (mouseX > x-sz && mouseX < x+sz && mouseY > y-sz && mouseY < y+sz) {
+      output = true;
+    } else output = false;
+    return(output);
   }
 }
-class Magnet {
-  float posx;
-  float posy;
-  float dir;
-  float str;
-  PointCharge posc;
-  PointCharge negc;
-  Magnet(float x, float y, float ang, float s) {
-    posx = x;
-    posy = y;
-    dir = ang;
-    str = s*0.1;
-    posc = new PointCharge(x+sh*cos(-dir), y+sh*sin(-dir), str);
-    negc = new PointCharge(x-sh*cos(-dir), y-sh*sin(-dir), -str);
+
+class Buttonass {
+  int x;
+  int y;
+  int sz;
+  int widt;
+  int n;
+  int nselect;
+  String title;
+
+  Button[] buttons;
+  Buttonass(int x, int y, int size, int quantity, int selected, String title) {
+    this.x = x;
+    this.y = y;
+    this.sz = size;
+    this.widt = size*(3*quantity+1)/4;
+    n=quantity;
+    this.title = title;
+    this.nselect = selected;
+
+    buttons = new Button[n];
+    for (int i = 0; i<n; i++) {
+      buttons[i] = new Button(x-widt/2+(3*i+2)*sz/4, y, sz/2);
+    }
   }
-  void drawmag() {
-    int w = 20;
-    pushMatrix();
-    translate(posx+sh, posy+sh);
-    rotate(-dir);
-    stroke(#000000);
-    strokeWeight(1);
-   // noStroke();
-    fill(#FA0808);
-    rect(0, -w/4, w/2, w/2);
-    fill(#0815FA);
-    rect(-w/2, -w/4, w/2, w/2);
-    fill(#000000);
-   noStroke();
-    ellipse(0, 0, 3, 3);
-    fill(#57D335);
-    ellipse(w/2,0,3,3);
-    ellipse(-w/2,0,3,3);
-    
-    popMatrix();
+
+  void drawButtonass() {
+    strokeWeight(2);
+    stroke(0,0,0);
+    fill(255,255,255);
+    rect(x-widt/2, y-sz/2, widt, sz);
+    textSize(25);
+    text(title, x , y - sz);
+    for (int i = 0; i<n; i++) {
+      buttons[i].drawButton();
+    }
+    fill(128,128,255);
+    buttons[nselect].drawButton();
+  }
+  
+  boolean mouseCheck() {
+    for(int i = 0; i < n; i++) {
+      if (buttons[i].mouseCheck()) {
+       nselect = i;
+       return(true);
+      }
+    }
+    return(false);
   }
 }
