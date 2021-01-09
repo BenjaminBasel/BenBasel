@@ -14,6 +14,6 @@ article_header:
 ---
 
 ### Description:
-Artist(s): Benjamin Basel
+Personal Project
 
 Acrylic paintings done on top of cards from the Magic: the Gathering and Pokemon trading card games.

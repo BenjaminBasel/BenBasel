@@ -73,6 +73,9 @@ void mousePressed() {
 
 class CompositeMagnet {
   int mode;
+  int widt = 25;
+  int heigh = 150;
+  int radius = 300;
   ArrayList<Magnet> mags;
 
   CompositeMagnet(int mode) {
@@ -158,12 +161,12 @@ class CompositeMagnet {
 
 
  void maggen(float ang, boolean pol) {
-    for (int i = 0; i < 25; i+=5) {
-      for (int i2 = 0; i2 < 150; i2+=5) {
+    for (int i = 0; i < widt; i+=5) {
+      for (int i2 = -heigh/2; i2 < heigh/2; i2+=5) {
         if (pol) {
-          mags.add(new Magnet(675+i, 325+i2, -ang, 1));
+          mags.add(new Magnet(sz/2+(radius+i)*cos(ang)-i2*sin(ang),sz/2+(radius+i)*sin(ang)+i2*cos(ang), -ang, 3));
         } else {
-          mags.add(new Magnet(125-i, 325+i2, PI-ang, 1));
+        mags.add(new Magnet(sz/2+(radius+i)*cos(ang)-i2*sin(ang),sz/2+(radius+i)*sin(ang)+i2*cos(ang), PI-ang, 3));
         }
       }
     }

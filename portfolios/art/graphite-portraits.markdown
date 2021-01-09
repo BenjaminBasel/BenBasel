@@ -13,6 +13,6 @@ article_header:
   src: /assets/images/portfolios/graphite-portraits/cover.png
 ---
 ### Description:
-Artist(s): Benjamin Basel
+Personal Project
 
 Graphite portraits done between 2017-2019. 

@@ -15,7 +15,8 @@ article_header:
 ---
 <script type="text/javascript" src="processing.js"></script>
 ### Description:
-Project Contributer(s): Benjamin Basel
+Personal Project 
+(done as a supplement to a School Group Project)
 
 In 2019 Benjamin was given an assignment to design and build an electric motor from scratch as a member of a 3 person team. In order to resolve inconclusive discussions on the best wiring and magnet configurations for the design, he used Processing 3.0 to create a program in order to map the force vectorfield produced by an input magnet configuration as well as to calculate the forces applied to a three coil rotor rotating in the center with input electric current directions. Further updating and bugclearing has been performed up to the present date.
 
